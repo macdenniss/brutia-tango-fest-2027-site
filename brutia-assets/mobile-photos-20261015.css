@@ -1,0 +1,41 @@
+/* Keep the original photographs complete on phones and small tablets. */
+@media (max-width: 900px) {
+  body .hero {
+    min-height: 0;
+    padding-top: calc(100px + 100vw * 768 / 2055 + 24px);
+    padding-bottom: 42px;
+    align-items: start;
+    background: var(--ink);
+  }
+  body .hero-img {
+    inset: 100px 0 auto;
+    height: auto;
+    aspect-ratio: 2055 / 768;
+    object-fit: contain;
+    object-position: center;
+  }
+  body .portrait { min-height: 0; }
+  body .portrait img { display: block; height: auto; }
+  body .photo-strip {
+    display: block;
+    min-height: 0;
+    padding: 0;
+    background: var(--ink);
+  }
+  body .photo-strip img {
+    position: relative;
+    display: block;
+    height: auto;
+    object-fit: contain;
+  }
+  body .photo-strip > div { padding: 40px clamp(24px, 5vw, 76px) 60px; }
+  body .dj-portraits figure { min-height: 0; }
+  body .dj-portraits img { position: relative; height: auto; }
+  body .dj-portraits figure:hover img { transform: none; }
+  body .venue-photo-grid { grid-template-columns: 1fr; }
+  body .venue-photo-grid img,
+  body .venue-photo-grid figure:first-child img { display: block; height: auto; }
+}
+@media (max-width: 560px) {
+  body .dj-portraits figure:last-child { width: 100%; justify-self: stretch; }
+}
