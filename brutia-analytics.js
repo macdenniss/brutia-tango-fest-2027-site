@@ -58,7 +58,7 @@
       try {
         const referrer = new URL(document.referrer);
         if (['https:', 'http:'].includes(referrer.protocol)) {
-          config.page_referrer = referrer.origin + referrer.pathname;
+          config.page_referrer = referrer.origin;
         }
       } catch { /* ignore malformed referrer */ }
     }
