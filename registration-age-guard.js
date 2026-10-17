@@ -3,6 +3,14 @@
   const birth = form?.querySelector('[name="data_nascita"]');
   const button = form?.querySelector('button[type="submit"]');
   if (!form || !birth || !button) return;
+  const error = document.createElement('small');
+  error.id = 'birth-date-error';
+  error.setAttribute('role', 'alert');
+  error.textContent = document.documentElement.lang === 'en' ? 'Incorrect date of birth' : 'data nascita errata';
+  error.hidden = true;
+  birth.insertAdjacentElement('afterend', error);
+  const describedBy = birth.getAttribute('aria-describedby');
+  birth.setAttribute('aria-describedby', [describedBy, error.id].filter(Boolean).join(' '));
   let held = false;
   let previouslyDisabled = false;
   function adult() {
@@ -17,7 +25,11 @@
     let cutoff = String(year).padStart(4, '0') + today.slice(4);
     if (cutoff.endsWith('-02-29') && new Date(cutoff + 'T00:00:00Z').getUTCMonth() !== 1) cutoff = year + '-02-28';
     birth.max = cutoff;
-    if (!adult()) {
+    const underage = !adult();
+    error.hidden = !underage;
+    if (underage) birth.setAttribute('aria-invalid', 'true');
+    else birth.removeAttribute('aria-invalid');
+    if (underage) {
       if (!held) previouslyDisabled = button.disabled;
       held = true;
       if (!button.disabled) button.disabled = true;
