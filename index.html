@@ -2,32 +2,32 @@
 </style><link rel="stylesheet" href="/_astro/BrutiaFest.DrIhLPx4.css"><style>
   #btf-analytics-controls [hidden] { display: none !important; }
   #btf-analytics-controls .btf-consent {
-    position: fixed; z-index: 2000; left: 12px; right: 12px; bottom: 12px;
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-    max-width: 900px; margin: auto; padding: 18px;
-    border: 1px solid #dfbad2; border-radius: 12px;
-    background: #fff; color: #241a2c; box-shadow: 0 3px 20px #0003;
-    font: 15px/1.45 system-ui, sans-serif;
+    position: fixed; z-index: 2000; left: 8px; right: 8px; bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    max-width: 620px; margin: auto; padding: 10px 12px;
+    border: 1px solid #e4c8d9; border-radius: 9px;
+    background: #fff; color: #241a2c; box-shadow: 0 2px 12px #0002;
+    font: 12px/1.35 system-ui, sans-serif;
   }
-  #btf-analytics-controls .btf-consent-copy { flex: 1 1 370px; }
-  #btf-analytics-controls .btf-consent-copy p { margin: 6px 0 0; }
+  #btf-analytics-controls .btf-consent-copy { flex: 1 1 315px; min-width: 0; }
+  #btf-analytics-controls .btf-consent-copy strong { font-size: 12px; }
+  #btf-analytics-controls .btf-consent-copy p { margin: 2px 0 0; }
   #btf-analytics-controls .btf-consent-copy a { color: #6c2c5d; text-decoration: underline; }
-  #btf-analytics-controls .btf-consent-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  #btf-analytics-controls .btf-consent-actions { display: flex; flex-wrap: nowrap; justify-content: flex-end; gap: 6px; margin-left: auto; }
   #btf-analytics-controls button {
-    min-height: 44px; padding: 10px 14px; border: 1px solid #6c2c5d;
-    border-radius: 8px; background: white; color: #6c2c5d;
-    font: 600 14px/1.2 system-ui, sans-serif; cursor: pointer;
+    min-height: 36px; padding: 6px 10px; border: 1px solid #6c2c5d;
+    border-radius: 6px; background: white; color: #6c2c5d;
+    font: 600 12px/1.2 system-ui, sans-serif; cursor: pointer;
   }
   #btf-analytics-controls [data-btf-consent-accept] { color: #fff; background: #6c2c5d; }
   #btf-analytics-controls button:focus-visible { outline: 3px solid #ffce55; outline-offset: 2px; }
   #btf-analytics-controls .btf-consent-manage {
-    position: fixed; bottom: 8px; right: 8px; z-index: 1999;
-    background: #fff; opacity: .94; font-size: 12px; min-height: 36px;
+    position: fixed; bottom: 6px; right: 6px; z-index: 1999;
+    background: #fff; opacity: .94; font-size: 11px; min-height: 32px; padding: 4px 8px;
   }
   @media (max-width: 600px) {
-    #btf-analytics-controls .btf-consent { padding: 12px; gap: 10px; }
-    #btf-analytics-controls .btf-consent-actions { width: 100%; }
-    #btf-analytics-controls .btf-consent-actions button { flex: 1; }
+    #btf-analytics-controls .btf-consent { padding: 9px 10px; gap: 7px; }
+    #btf-analytics-controls .btf-consent-copy { flex-basis: 100%; }
   }
 </style><style>.room-cards .room-package-includes{display:block;color:#176b65;font-size:12px;font-weight:750;line-height:1.35}</style><style>
 .btf-hotel-benefits{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;margin-bottom:12px}
@@ -70,4 +70,4 @@ const englishAttributes = {"Brutia Tango Fest, torna all’inizio":"Brutia Tango
       const attrs = englishAttributes;
       document.querySelectorAll('[alt],[placeholder],[aria-label]').forEach((element) => ['alt', 'placeholder', 'aria-label'].forEach((attr) => { if (attrs[element.getAttribute(attr)]) element.setAttribute(attr, attrs[element.getAttribute(attr)]); }));
     }
-  })();</script><script src="/registration-age-guard.js?v=40" defer></script><div id="btf-analytics-controls" data-measurement-id="G-66RDE32WC8"><aside class="btf-consent" data-btf-consent-banner hidden role="region" aria-label="Preferenze statistiche"><div class="btf-consent-copy"><strong>Aiutaci a migliorare il sito</strong><p>Solo con il tuo consenso, Google Analytics misura visite e clic usando cookie o identificatori tecnici. Non inviamo dati del modulo di iscrizione. Puoi rifiutare o cambiare scelta. <a href="/privacy/">Informativa privacy</a></p></div><div class="btf-consent-actions"><button type="button" data-btf-consent-reject>Rifiuta</button><button type="button" data-btf-consent-accept>Accetta statistiche</button></div></aside><button class="btf-consent-manage" type="button" data-btf-consent-manage hidden>Preferenze cookie</button><script src="/brutia-analytics.js" defer></script><script src="/brutia-hotel-ux.js?v=2" defer></script></div></body></html>
+  })();</script><script src="/registration-age-guard.js?v=40" defer></script><div id="btf-analytics-controls" data-measurement-id="G-66RDE32WC8"><aside class="btf-consent" data-btf-consent-banner hidden role="region" aria-label="Preferenze cookie"><div class="btf-consent-copy"><strong>Cookie e privacy</strong><p>Cookie statistici facoltativi: Google Analytics misura visite e clic solo con il tuo consenso. Non inviamo dati del modulo. <a href="/privacy/">Informativa privacy</a></p></div><div class="btf-consent-actions"><button type="button" data-btf-consent-reject>Rifiuta</button><button type="button" data-btf-consent-accept>Accetta cookies</button></div></aside><button class="btf-consent-manage" type="button" data-btf-consent-manage hidden>Preferenze cookie</button><script src="/brutia-analytics.js" defer></script><script src="/brutia-hotel-ux.js?v=2" defer></script></div></body></html>
