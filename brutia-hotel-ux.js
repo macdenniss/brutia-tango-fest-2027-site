@@ -32,7 +32,10 @@
         const old = card.querySelector('.btf-old-price');
         const oldAmount = old && old.querySelector('s');
         const length = card.querySelector('.btf-nights-label');
-        if (main) main.textContent = '€' + (earlyBird ? early : regular);
+        if (main) {
+          main.textContent = '€' + (earlyBird ? early : regular);
+          main.dataset.rateLabel = earlyBird ? 'PROMO' : (isEnglish ? 'PRICE' : 'PREZZO');
+        }
         if (oldAmount) oldAmount.textContent = '€' + regular;
         if (old) old.hidden = !earlyBird;
         if (length) length.textContent = nights + (isEnglish ? ' nights' : ' notti');
