@@ -42,13 +42,6 @@
       });
     }
 
-    // Use 19-21 February as the initial comparison, matching the approved preview.
-    // Never override a visitor's restored or explicitly selected stay.
-    if (!stayChoices.some(input => input.checked)) {
-      dateChoices[0].checked = true;
-      dateChoices[0].dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
     stayChoices.forEach(input => input.addEventListener('change', displayRates));
     section.querySelectorAll('input[name="camera"]').forEach(input => input.addEventListener('change', displayRates));
     window.addEventListener('pageshow', displayRates);
