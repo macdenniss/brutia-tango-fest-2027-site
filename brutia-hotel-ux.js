@@ -13,6 +13,15 @@
     const earlyBirdEnd = Date.parse('2026-12-01T00:00:00+01:00');
 
     function displayRates() {
+      const promo = Date.now() < earlyBirdEnd;
+      const note = section.querySelector('#booking-promo-note');
+      if (note) note.textContent = promo
+        ? (isEnglish ? 'Hotel PROMO prices per person, valid through 30 November 2026.' : 'Prezzi hotel PROMO per persona, validi fino al 30 novembre 2026.')
+        : (isEnglish ? 'Hotel prices per person. The promotion ended on 30 November 2026.' : 'Prezzi hotel per persona. La promozione è terminata il 30 novembre 2026.');
+      section.querySelectorAll('.booking-option-price').forEach(price => {
+        const amount = price.dataset[promo ? 'promo' : 'standard'];
+        price.textContent = '€' + amount + (promo ? ' · PROMO' : '') + (isEnglish ? ' per person' : ' per persona');
+      });
       const chosen = stayChoices.find(input => input.checked);
       const nights = chosen && chosen.dataset.nights === '3' ? 3 : 2;
       const activeHotel = Boolean(chosen && chosen.dataset.noRoom !== 'true');
@@ -44,7 +53,9 @@
 
     stayChoices.forEach(input => input.addEventListener('change', displayRates));
     section.querySelectorAll('input[name="camera"]').forEach(input => input.addEventListener('change', displayRates));
+    section.addEventListener('change', displayRates);
     window.addEventListener('pageshow', displayRates);
+    window.addEventListener('focus', displayRates);
     displayRates();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
