@@ -95,6 +95,15 @@
       window.location.reload();
     }
   }
+  window.addEventListener('storage', (e) => {
+    if ((e.key === storageKey || e.key === null) && e.newValue !== 'yes' && enabled) {
+      enabled = false;
+      window['ga-disable-' + measurementId] = true;
+      window.gtag('consent', 'update', { analytics_storage: 'denied' });
+      viewBanner(e.newValue !== 'no');
+      window.location.reload();
+    }
+  });
   yes.addEventListener('click', () => choose('yes'));
   no.addEventListener('click', () => choose('no'));
   manage.addEventListener('click', () => viewBanner(true));
@@ -114,7 +123,7 @@
   });
   document.addEventListener('submit', (e) => {
     if (e.target && e.target.matches('form[name="brutia-iscrizione"]')) {
-      event('registration_form_submit_attempt');
+      event('registration_submit_attempt');
     }
   }, true);
   let started = false;
@@ -128,8 +137,8 @@
     if (e.target.closest && e.target.closest('form[name="brutia-iscrizione"]')) event('registration_validation_error');
   }, true);
   document.addEventListener('btf:registration-validation-error', () => event('registration_validation_error'));
-  document.addEventListener('btf:registration-submit', () => event('registration_submit'));
-  window.addEventListener('btf:registration-status-unknown', () => event('registration_status_unknown'));
+  // The native submit listener counts each attempt once.
+  window.addEventListener('btf:registration-status-unknown', () => event('registration_submit_error', { error_type: 'outcome_unknown' }));
   function reportVerifiedReceipt() {
     if (!enabled || !verifiedReceipt) return;
     const key = 'btf27_success_' + verifiedReceipt;
