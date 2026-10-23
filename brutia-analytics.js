@@ -10,6 +10,8 @@
   const yes = root.querySelector('[data-btf-consent-accept]');
   const no = root.querySelector('[data-btf-consent-reject]');
   let enabled = false;
+  let verifiedReceipt = typeof window.btfVerifiedReceipt === 'string' ? window.btfVerifiedReceipt : '';
+  const reported = new Set();
   function storedChoice() {
     try { return localStorage.getItem(storageKey); } catch { return null; }
   }
@@ -23,6 +25,7 @@
   function enableAnalytics() {
     if (enabled) return;
     enabled = true;
+    window['ga-disable-' + measurementId] = false;
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag('consent', 'default', {
@@ -36,6 +39,7 @@
     // Keep only tightly validated UTM campaign labels to measure Facebook/Instagram traffic.
     const config = {
       page_location: location.origin + location.pathname,
+      page_referrer: '',
       cookie_prefix: 'btf27',
       cookie_domain: 'none',
       allow_google_signals: false,
@@ -67,6 +71,7 @@
     script.async = true;
     script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
     document.head.append(script);
+    reportVerifiedReceipt();
   }
   function event(name, values = {}) {
     if (enabled && typeof window.gtag === 'function') window.gtag('event', name, values);
@@ -76,6 +81,8 @@
     viewBanner(false);
     if (choice === 'yes') enableAnalytics();
     else if (enabled) {
+      enabled = false;
+      window['ga-disable-' + measurementId] = true;
       window.gtag('consent', 'update', { analytics_storage: 'denied' });
       // Remove only Brutia-specific first-party GA cookies, never other PeperTango cookies.
       document.cookie.split(';').forEach((entry) => {
@@ -110,6 +117,37 @@
       event('registration_form_submit_attempt');
     }
   }, true);
+  let started = false;
+  document.addEventListener('input', (e) => {
+    if (!started && e.target.closest && e.target.closest('form[name="brutia-iscrizione"]')) {
+      started = true;
+      event('registration_form_start');
+    }
+  });
+  document.addEventListener('invalid', (e) => {
+    if (e.target.closest && e.target.closest('form[name="brutia-iscrizione"]')) event('registration_validation_error');
+  }, true);
+  document.addEventListener('btf:registration-validation-error', () => event('registration_validation_error'));
+  document.addEventListener('btf:registration-submit', () => event('registration_submit'));
+  window.addEventListener('btf:registration-status-unknown', () => event('registration_status_unknown'));
+  function reportVerifiedReceipt() {
+    if (!enabled || !verifiedReceipt) return;
+    const key = 'btf27_success_' + verifiedReceipt;
+    if (reported.has(key)) return;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+    } catch {
+      try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); } catch { /* deduplicate this page in memory */ }
+    }
+    reported.add(key);
+    event('registration_success');
+  }
+  window.addEventListener('btf:registration-confirmed', (e) => {
+    if (!e.detail || typeof e.detail.receipt !== 'string' || !e.detail.receipt) return;
+    verifiedReceipt = e.detail.receipt;
+    reportVerifiedReceipt();
+  });
   if (/^\/(?:en\/)?grazie\/?$/.test(location.pathname)) {
     event('registration_thank_you_view');
   }
