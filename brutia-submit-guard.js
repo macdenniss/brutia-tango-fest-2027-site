@@ -1,111 +1,121 @@
-/* Registration transport: durable capability, iframe ACK and read-only reconciliation. */
+/* Anonymous POST: preserve the filled form and verify persistence independently of the response. */
 (() => {
   const form = document.querySelector('form[name="brutia-iscrizione"]');
-  if (!form || form.dataset.ackTransport) return;
-  form.dataset.ackTransport = '1';
-  const button = form.querySelector('button[type="submit"]');
-  if (!button) return;
+  const button = form?.querySelector('button[type="submit"]');
+  if (!form || !button) return;
   const english = document.documentElement.lang === 'en';
   const label = button.textContent;
   const notice = document.createElement('p');
-  notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite');
+  notice.setAttribute('role', 'status');
+  notice.setAttribute('aria-live', 'polite');
   button.insertAdjacentElement('afterend', notice);
-  const storageKey = 'btf27-request-v1';
-  let pending = false, current, polling, started, posts = 0, frame, transport;
-  function message(it, en) { notice.textContent = english ? en : it; }
-  function finish(saved) {
-    pending = false; clearTimeout(polling);
-    if (saved) {
-      const proof = new URLSearchParams({ request: current.request_id, token: current.request_token });
-      window.location.assign((english ? '/en/grazie/' : '/grazie/') + '#' + proof);
-      return;
-    }
-    button.disabled = false; button.textContent = label; form.removeAttribute('aria-busy');
-    document.dispatchEvent(new Event('btf:registration-retry-ready'));
-    message('Verifica temporaneamente non disponibile. I dati sono conservati: riprova lo stesso invio per verificarlo senza duplicati, oppure contatta pepertango@gmail.com.', 'Verification temporarily unavailable. Your details are preserved: retry the same submission to check it without duplicates, or contact pepertango@gmail.com.');
-    window.dispatchEvent(new Event('btf:registration-status-unknown'));
+  const storageKey = 'btf-pending-registration';
+  let current;
+  try { current = JSON.parse(sessionStorage.getItem(storageKey) || sessionStorage.getItem('btf27-request-v1') || 'null'); } catch {}
+  let pending = false;
+  let timer;
+  let snapshot;
+  let retryAllowed = false;
+  const uuid = value => /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value || '');
+  if (current && (!uuid(current.request_id) || !uuid(current.request_token))) current = null;
+  function busy(value) {
+    pending = value;
+    button.disabled = value;
+    button.textContent = value ? (english ? 'Checking…' : 'Verifica in corso…') : label;
+    if (value) form.setAttribute('aria-busy', 'true');
+    else form.removeAttribute('aria-busy');
   }
-  function status() {
-    return new Promise(resolve => {
-      const callback = 'btfStatus_' + crypto.randomUUID().replaceAll('-', '');
-      const script = document.createElement('script');
-      const url = new URL(form.dataset.registrationEndpoint || form.action);
-      const cleanup = value => { clearTimeout(timer); script.remove(); window[callback] = () => {}; resolve(value); };
-      const timer = setTimeout(() => cleanup(null), 12000);
-      window[callback] = result => cleanup(result);
-      script.onerror = () => cleanup(null);
-      url.search = new URLSearchParams({ action: 'requestStatus', request_id: current.request_id, request_token: current.request_token, callback }).toString();
-      script.src = url.href; document.head.append(script);
-    });
+  function confirmed() {
+    clearTimeout(timer);
+    try { sessionStorage.setItem('btf-verified-request', current.request_id); sessionStorage.removeItem(storageKey); sessionStorage.removeItem('btf27-request-v1'); } catch {}
+    const target = document.documentElement.lang === 'en' ? '/en/grazie' : '/grazie';
+    location.assign(target + '#' + new URLSearchParams({request_id: current.request_id, request_token: current.request_token}));
+  }
+  function check(attempt = 0) {
+    if (!current) return;
+    const checkedRequest = current;
+    const callback = 'btfStatus_' + crypto.randomUUID().replaceAll('-', '');
+    const script = document.createElement('script');
+    let settled = false;
+    function finish(saved) {
+      if (settled) return;
+      settled = true;
+      if (current === checkedRequest) clearTimeout(timer);
+      script.remove();
+      // A late response from Google is harmless even after timeout.
+      window[callback] = () => {};
+      setTimeout(() => { delete window[callback]; }, 60000);
+      if (current !== checkedRequest) return;
+      if (saved) { confirmed(); return; }
+      if (attempt < 3) { timer = setTimeout(() => check(attempt + 1), 3000); return; }
+      busy(false);
+      retryAllowed = !!snapshot;
+      notice.textContent = english
+        ? 'Result still unverified. Your details are retained. Press Send to retry the same request safely; no duplicate registration will be created.'
+        : 'Esito ancora da verificare. I dati sono conservati. Premi Invia per riprovare la stessa richiesta: non verrà creata una doppia iscrizione.';
+      window.dispatchEvent(new Event('btf:registration-status-unknown'));
+    }
+    window[callback] = result => finish(result?.ok === true && result?.saved === true);
+    const url = new URL(form.action);
+    url.search = new URLSearchParams({action:'requestStatus', callback, request_id:current.request_id, request_token:current.request_token, protocol:'2'});
+    script.crossOrigin = 'anonymous';
+    script.src = url.href;
+    script.referrerPolicy = 'no-referrer';
+    script.onerror = () => finish(false);
+    timer = setTimeout(() => finish(false), 15000);
+    document.head.append(script);
+  }
+  function reject(result, checkedRequest) {
+    if (current !== checkedRequest || result?.ok !== false || result?.definitive !== true) return;
+    clearTimeout(timer);
+    current = null;
+    snapshot = null;
+    retryAllowed = false;
+    try { sessionStorage.removeItem(storageKey); sessionStorage.removeItem('btf27-request-v1'); } catch {}
+    busy(false);
+    notice.textContent = result.error || (english ? 'Please check your details.' : 'Verifica i dati inseriti.');
   }
   function post() {
-    if (!frame) {
-      frame = document.createElement('iframe'); frame.name = 'btf_ack_' + crypto.randomUUID(); frame.hidden = true;
-      transport = document.createElement('form'); transport.hidden = true; transport.method = 'POST'; transport.target = frame.name;
-      transport.action = form.dataset.registrationEndpoint || form.action;
-      document.body.append(frame, transport);
-    }
-    transport.replaceChildren();
-    for (const [name, value] of Object.entries({ browser_form: '1', receipt_nonce: current.nonce, return_path: english ? '/en/grazie' : '/grazie', payload: JSON.stringify(current.payload) })) {
-      const input = document.createElement('input'); input.type = 'hidden'; input.name = name; input.value = value; transport.append(input);
-    }
-    posts++; HTMLFormElement.prototype.submit.call(transport);
+    const checkedRequest = current;
+    // A simple URL-encoded request avoids preflight. Omitting cookies also avoids Google's multi-login routing.
+    fetch(form.action, {
+      method: 'POST', credentials: 'omit', referrerPolicy: 'no-referrer',
+      body: new URLSearchParams({payload: snapshot})
+    }).then(response => response.json()).then(result => reject(result, checkedRequest)).catch(() => {});
+    // A lost or unreadable response is not a failed save: polling remains authoritative.
   }
-  async function reconcile() {
-    if (!pending) return;
-    const result = await status();
-    if (!pending) return;
-    if (result?.saved === true) { finish(true); return; }
-    if (Date.now() - started > 180000) { finish(false); return; }
-    // A replay carries the same capability and exact payload, including after a lost ACK.
-    if (posts < 3 && Date.now() - started > posts * 45000) post();
-    polling = setTimeout(reconcile, 4000);
-  }
-  async function begin(payload) {
-    if (pending) return;
-    pending = true; button.disabled = true; button.textContent = english ? 'Sending…' : 'Invio in corso…'; form.setAttribute('aria-busy', 'true');
-    message('Invio e verifica iscrizione in corso… Attendi senza chiudere la pagina.', 'Sending and verifying registration… Please keep this page open.');
-    try {
-      delete payload.request_id; delete payload.request_token; delete payload.receipt_nonce;
-      const fingerprint = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(Object.entries(payload).sort())))), x => x.toString(16).padStart(2, '0')).join('');
-      let stored = current; try { stored = JSON.parse(sessionStorage.getItem(storageKey)) || stored; } catch {}
-      if (stored && stored.fingerprint !== fingerprint) {
-        pending = false; button.disabled = false; button.textContent = label; form.removeAttribute('aria-busy');
-        document.dispatchEvent(new Event('btf:registration-retry-ready'));
-        message('Un invio precedente è ancora da verificare. Ripristina gli stessi dati oppure contatta pepertango@gmail.com prima di modificarlo.', 'A previous submission still needs verification. Restore the same details or contact pepertango@gmail.com before changing it.'); return;
-      }
-      current = stored || { fingerprint, request_id: crypto.randomUUID(), request_token: crypto.randomUUID() };
-      try { sessionStorage.setItem(storageKey, JSON.stringify({ fingerprint: current.fingerprint, request_id: current.request_id, request_token: current.request_token })); } catch { /* In-memory capability still protects retries in this page. */ }
-      current.payload = { ...payload, request_id: current.request_id, request_token: current.request_token };
-      current.nonce = crypto.randomUUID().replaceAll('-', ''); started = Date.now(); posts = 0;
-      document.dispatchEvent(new Event('btf:registration-submit'));
-      // A recovered tab first checks its old request; it never invents a new identity.
-      if (stored && (await status())?.saved === true) { finish(true); return; }
-      post(); polling = setTimeout(reconcile, 4000);
-    } catch { finish(false); }
-  }
-  window.addEventListener('message', event => {
-    if (!pending || !current || !/^https:\/\/(?:[a-z0-9-]+[.-])?script\.googleusercontent\.com$/.test(event.origin)) return;
-    if (event.data?.type !== 'btf-registration-result' || event.data.nonce !== current.nonce) return;
-    if (event.data.ok === true) { finish(true); return; }
-    if (event.data.definitive === true) {
-      finish(false);
-      if (event.data.code === 'already_registered') {
-        message('Iscrizione già presente per questo partecipante. Contatta pepertango@gmail.com per verificarla.', 'This participant is already registered. Contact pepertango@gmail.com to check it.');
-      } else {
-        current = null; try { sessionStorage.removeItem(storageKey); } catch {}
-        message('Iscrizione non salvata: verifica i dati del modulo e riprova.', 'Registration not saved: check the form details and try again.');
-      }
-    }
-    // A negative response is reconciled: it cannot undo a durable commit.
-  });
-  document.addEventListener('btf:registration-ready', event => { void begin(event.detail); });
   document.addEventListener('submit', event => {
     if (event.target !== form) return;
     if (pending) { event.preventDefault(); return; }
     if (event.defaultPrevented) return;
+    // A retry reuses the immutable payload and capability; edited fields cannot create a second request.
+    if (current) {
+      if (!retryAllowed || !snapshot) { event.preventDefault(); busy(true); check(); return; }
+      event.preventDefault();
+      form.querySelector('input[name="payload"]').value = snapshot;
+      retryAllowed = false;
+      busy(true);
+      timer = setTimeout(() => check(), 2000);
+      post();
+      return;
+    }
+    const payloadInput = form.querySelector('input[name="payload"]');
+    let payload;
+    try { payload = JSON.parse(payloadInput.value); } catch { event.preventDefault(); return; }
+    current = {request_id:crypto.randomUUID(), request_token:crypto.randomUUID()};
+    Object.assign(payload, current);
+    payloadInput.value = JSON.stringify(payload);
+    snapshot = payloadInput.value;
+    try { sessionStorage.setItem(storageKey, JSON.stringify(current)); } catch {}
     event.preventDefault();
-    try { void begin(JSON.parse(form.querySelector('#registration-payload').value)); }
-    catch { message('Dati non pronti: verifica il modulo.', 'Details not ready: check the form.'); }
+    busy(true);
+    notice.textContent = english ? 'Please wait for the saved request to be verified.' : 'Attendi la verifica della richiesta salvata.';
+    document.dispatchEvent(new Event('btf:registration-submit'));
+
+    timer = setTimeout(() => check(), 2000);
+    post();
+  });
+  window.addEventListener('pageshow', () => {
+    if (current && !pending) { busy(true); check(); }
   });
 })();
