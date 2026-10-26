@@ -6,7 +6,7 @@
   if (!/^G-[A-Z0-9]+$/.test(measurementId)) return;
   const storageKey = 'btf27_analytics_consent_v1';
   const banner = root.querySelector('[data-btf-consent-banner]');
-  const manage = root.querySelector('[data-btf-consent-manage]');
+  const manage = document.querySelector('[data-btf-consent-manage]');
   const yes = root.querySelector('[data-btf-consent-accept]');
   const no = root.querySelector('[data-btf-consent-reject]');
   let enabled = false;
@@ -20,7 +20,7 @@
   }
   function viewBanner(show) {
     banner.hidden = !show;
-    manage.hidden = show;
+    if (manage?.tagName === 'BUTTON') manage.hidden = show;
   }
   function enableAnalytics() {
     if (enabled) return;
@@ -106,7 +106,7 @@
   });
   yes.addEventListener('click', () => choose('yes'));
   no.addEventListener('click', () => choose('no'));
-  manage.addEventListener('click', () => viewBanner(true));
+  manage?.addEventListener('click', (event) => { event.preventDefault(); viewBanner(true); });
   const choice = storedChoice();
   if (choice === 'yes') { enableAnalytics(); viewBanner(false); }
   else viewBanner(choice !== 'no');

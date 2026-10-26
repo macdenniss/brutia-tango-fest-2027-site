@@ -23,7 +23,7 @@
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== parent || event.data?.type !== 'btf-meta-event') return;
     const {name,eventID} = event.data;
-    if (name === 'PageView' && !viewed) { viewed = true; fbq('trackSingle', pixel, 'PageView'); }
+    if (name === 'PageView' && !viewed) { viewed = true; fbq('track', 'PageView'); }
     if (name === 'Lead' && /^btf-[a-f0-9]{64}$/.test(eventID || '') && !leads.has(eventID)) {
       leads.add(eventID);
       fbq('trackSingle', pixel, 'Lead', {}, {eventID});

@@ -90,7 +90,7 @@
   // Existing visitors see the new marketing choice even when GA was already accepted.
   function start() {
     loaded = true;
-    try { if (localStorage.getItem(key) === null) { banner.hidden = false; root.querySelector('[data-btf-consent-manage]').hidden = true; } } catch {}
+    try { if (localStorage.getItem(key) === null) { banner.hidden = false; const manage = root.querySelector('[data-btf-consent-manage]'); if (manage) manage.hidden = true; } } catch {}
     enable();
   }
   if (document.readyState !== 'complete') document.addEventListener('DOMContentLoaded', start, {once:true});
