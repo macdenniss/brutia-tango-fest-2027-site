@@ -1,0 +1,15 @@
+/* Reference lettering overlays the existing, unchanged dancer photograph. */
+.hero h1[data-astro-cid-n4sz6m7g] {
+  margin: 0;
+  line-height: 0;
+}
+.hero .hero-wordmark[data-astro-cid-n4sz6m7g] {
+  display: block;
+  width: min(100%, 480px);
+  height: auto;
+}
+@media (max-width: 640px) {
+  .hero .hero-wordmark[data-astro-cid-n4sz6m7g] {
+    width: min(100%, 360px);
+  }
+}
