@@ -44,7 +44,7 @@
   grid-column: 2;
   grid-row: 1;
   color: #8c205f;
-  font-size: 16px;
+  font-size: 26px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -83,10 +83,12 @@
 }
 
 #registration-form .participation-section .lesson-cards {
+  grid-auto-rows: 1fr;
   gap: 12px;
 }
 
 #registration-form .participation-section .lesson-cards > label > span {
+  height: 100%;
   min-height: 200px;
   gap: 10px;
 }
@@ -124,9 +126,10 @@
 }
 
 #registration-form .participation-section .lesson-price {
+  margin-top: auto;
   padding-top: 4px;
   color: #8c205f;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
 }
 
