@@ -1,0 +1,206 @@
+/* Keep the participation choices readable within the existing registration form. */
+#registration-form .participation-section .package-cards {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+#registration-form .participation-section .package-cards > label > span,
+#registration-form .participation-section .lesson-cards > label > span {
+  background: #fff;
+  border-color: #dfd4df;
+  padding: 20px;
+  text-align: left;
+  align-items: start;
+  justify-content: start;
+  gap: 8px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+#registration-form .participation-section .package-cards > label > span {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+#registration-form .participation-section .package-cards > label > span > b {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+#registration-form .participation-section .package-cards > label > span > small {
+  color: #655b68;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+#registration-form .participation-section .package-cards > label:first-child > span > small:first-of-type,
+#registration-form .participation-section .seminar-package-card > span > small:nth-of-type(2) {
+  grid-column: 2;
+  grid-row: 1;
+  color: #8c205f;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#registration-form .participation-section .seminar-package-card > span > small:first-of-type {
+  grid-column: 1 / -1;
+  max-width: 68ch;
+}
+
+#registration-form .participation-section .seminar-schedule {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 6px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #ebe5ec;
+}
+
+#registration-form .participation-section .seminar-schedule > span {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #655b68;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  white-space: nowrap;
+  box-shadow: none;
+  transform: none;
+}
+
+#registration-form .participation-section .lesson-cards {
+  gap: 12px;
+}
+
+#registration-form .participation-section .lesson-cards > label > span {
+  min-height: 200px;
+  gap: 10px;
+}
+
+#registration-form .participation-section .lesson-cards > label > span > b {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+#registration-form .participation-section .lesson-kind {
+  order: -1;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: #8c205f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+#registration-form .participation-section .lesson-time {
+  color: #655b68 !important;
+  font-size: 13px !important;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+#registration-form .participation-section .lesson-level {
+  color: #655b68;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+#registration-form .participation-section .lesson-price {
+  padding-top: 4px;
+  color: #8c205f;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#registration-form .participation-section .choice-cards input:checked + span {
+  position: relative;
+  padding-right: 46px;
+  background: #86215f;
+  border-color: #86215f;
+}
+
+#registration-form .participation-section .choice-cards input:checked + span::before {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
+  color: #fff;
+}
+
+#registration-form .participation-section .choice-cards input:checked + span :is(b, small, em, i),
+#registration-form .participation-section .choice-cards input:checked + span .seminar-schedule > span {
+  color: #fff !important;
+}
+
+#registration-form .participation-section .choice-cards input:checked + span .lesson-kind {
+  background: transparent;
+}
+
+#registration-form .participation-section .choice-cards label:hover > span {
+  border-color: #a32571;
+}
+
+@media (max-width: 1100px) {
+  #registration-form .participation-section .lesson-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #registration-form .participation-section .lesson-cards > label > span {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 0;
+    gap: 4px 16px;
+  }
+
+  #registration-form .participation-section .lesson-cards > label > span > :not(.lesson-price) {
+    grid-column: 1;
+  }
+
+  #registration-form .participation-section .lesson-price {
+    grid-column: 2;
+    grid-row: 1 / 5;
+    align-self: center;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  #registration-form .participation-section .package-cards > label > span,
+  #registration-form .participation-section .lesson-cards > label > span {
+    padding: 18px;
+  }
+
+  #registration-form .participation-section .package-cards > label > span {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #registration-form .participation-section .package-cards > label > span > small,
+  #registration-form .participation-section .package-cards > label:first-child > span > small:first-of-type,
+  #registration-form .participation-section .seminar-package-card > span > small:nth-of-type(2) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  #registration-form .participation-section .choice-cards input:checked + span {
+    padding-right: 44px;
+  }
+}
