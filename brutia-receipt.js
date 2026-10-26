@@ -9,7 +9,7 @@
   let attempt = 0;
   function complete(saved) {
     root.querySelector('h1').textContent = saved ? (en ? 'Request received.' : 'Richiesta ricevuta.') : (en ? 'Outcome unverified.' : 'Esito da verificare.');
-    root.querySelector('[data-receipt-message]').textContent = saved ? (en ? 'Thank you. PeperTango will check availability and balance before sending confirmation and payment instructions.' : 'Grazie. PeperTango verificherà disponibilità e bilanciamento prima di inviarti conferma e istruzioni di pagamento.') : (en ? 'Verification is temporarily unavailable. Reload this page to check again, or contact pepertango@gmail.com before submitting again.' : 'Verifica temporaneamente non disponibile. Ricarica questa pagina per riprovare oppure contatta pepertango@gmail.com prima di un nuovo invio.');
+    root.querySelector('[data-receipt-message]').textContent = saved ? (en ? 'Thank you for submitting your registration request. We will check availability and send you confirmation with payment instructions.' : 'Grazie per aver inviato la tua richiesta di iscrizione. Verificheremo la disponibilità e ti invieremo la conferma con le istruzioni per il pagamento.') : (en ? 'Verification is temporarily unavailable. Reload this page to check again, or contact pepertango@gmail.com before submitting again.' : 'Verifica temporaneamente non disponibile. Ricarica questa pagina per riprovare oppure contatta pepertango@gmail.com prima di un nuovo invio.');
     root.dataset.receiptStatus = saved ? 'confirmed' : 'unknown';
     if (saved) {
       try { sessionStorage.removeItem('btf27-request-v1'); } catch {}
