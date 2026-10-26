@@ -8,6 +8,39 @@
   width: min(100%, 480px);
   height: auto;
 }
+.hero .hero-date {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 16px 0 0;
+  color: #ffe000;
+  font-family: Impact, "Arial Narrow", sans-serif;
+  font-weight: 900;
+  line-height: .95;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px #0008;
+}
+.hero-date-range {
+  font-size: clamp(54px, 6vw, 72px);
+  letter-spacing: -.035em;
+}
+.hero-date-detail {
+  display: grid;
+  gap: 5px;
+}
+.hero-date-month {
+  color: #fff;
+  font-size: 17px;
+  letter-spacing: .07em;
+}
+.hero-date-detail strong {
+  font-size: 38px;
+  font-weight: inherit;
+}
+html:lang(en) .hero-date-month[lang="it"],
+html:not(:lang(en)) .hero-date-month[lang="en"] {
+  display: none;
+}
 @media (max-width: 640px) {
   .hero .hero-wordmark[data-astro-cid-n4sz6m7g] {
     width: min(100%, 360px);
