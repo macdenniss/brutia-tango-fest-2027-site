@@ -41,6 +41,27 @@ html:lang(en) .hero-date-month[lang="it"],
 html:not(:lang(en)) .hero-date-month[lang="en"] {
   display: none;
 }
+.hero .hero-actions .btn.primary {
+  min-height: 66px;
+  padding: 0 32px;
+  font-size: 20px;
+  background: #c19a00;
+  border-color: #c19a00;
+  color: #fff;
+}
+.hero .hero-actions .btn.primary:hover {
+  background: #aa8700;
+  border-color: #aa8700;
+}
+.hero .hero-actions .btn.ghost {
+  background: #187a75;
+  border-color: #187a75;
+  color: #000;
+}
+.hero .hero-actions .btn.ghost:hover {
+  background: #146b67;
+  border-color: #146b67;
+}
 @media (max-width: 640px) {
   .hero .hero-wordmark[data-astro-cid-n4sz6m7g] {
     width: min(100%, 360px);
