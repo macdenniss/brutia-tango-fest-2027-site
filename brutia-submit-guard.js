@@ -69,6 +69,10 @@
   function confirmed() {
     const verified = current;
     stop();
+    busy(false);
+    button.disabled = true;
+    button.textContent = copy('Richiesta ricevuta', 'Request received');
+    notice.textContent = button.textContent;
     try { sessionStorage.setItem('btf-verified-request', verified.request_id); } catch {}
     forget();
     const target = english ? '/en/grazie' : '/grazie';
@@ -139,7 +143,9 @@
       if (!response.ok) throw new Error('http');
       return response.json();
     }).then(result => {
-      if (turn === generation) reject(result, checkedRequest, initialAttempt);
+      if (turn !== generation || current !== checkedRequest) return;
+      if (result?.ok === true && result.saved === true && result.request_id === checkedRequest.request_id) confirmed();
+      else reject(result, checkedRequest, initialAttempt);
     }).catch(() => {
       if (turn !== generation || current !== checkedRequest) return;
       connectionProblem = true;
