@@ -14,7 +14,7 @@
   const legacyKey = 'btf27-request-v1';
   const uuid = value => /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value || '');
   let current = null, snapshot = null, pending = false, timer, postTimer, postController, cancelStatus;
-  let generation = 0, connectionProblem = false;
+  let generation = 0, connectionProblem = false, postPending = false;
   const copy = (it, en) => english ? en : it;
   function show(errors, title) {
     if (form.btfValidation) form.btfValidation.show(errors, title);
@@ -59,6 +59,7 @@
   remember();
   function stop() {
     generation += 1;
+    postPending = false;
     clearTimeout(timer);
     clearTimeout(postTimer);
     cancelStatus?.();
@@ -134,6 +135,7 @@
   function post(initialAttempt = false) {
     const checkedRequest = current;
     const turn = generation;
+    postPending = true;
     postController = new AbortController();
     postTimer = setTimeout(() => postController?.abort(), 45000);
     fetch(form.action, {
@@ -151,7 +153,10 @@
       connectionProblem = true;
       notice.textContent = copy('La risposta non è arrivata. Stiamo verificando il salvataggio; conserva questa pagina aperta.', 'The response did not arrive. We are checking whether the request was saved; keep this page open.');
     }).finally(() => {
-      if (turn === generation) clearTimeout(postTimer);
+      if (turn === generation) {
+        postPending = false;
+        clearTimeout(postTimer);
+      }
     });
   }
   function check(attempt = 0, replayIfMissing = false) {
@@ -179,7 +184,8 @@
         return;
       }
       if (!result || result.ok !== true || typeof result.saved !== 'boolean') connectionProblem = true;
-      if (attempt < 3) { timer = setTimeout(() => check(attempt + 1, replayIfMissing), 3000); return; }
+      // A missing status is provisional while the current POST can still complete.
+      if (attempt < 3 || postPending) { timer = setTimeout(() => check(Math.min(attempt + 1, 3), replayIfMissing), 3000); return; }
       uncertain();
     }
     cancelStatus = () => { settled = true; script.remove(); window[callback] = () => {}; setTimeout(() => { delete window[callback]; }, 60000); };
