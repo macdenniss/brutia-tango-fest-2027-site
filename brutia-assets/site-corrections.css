@@ -1,0 +1,99 @@
+/* Approved contrast, footer, directions and restaurant presentation.
+   Loaded after the main styles so only these rules change. */
+
+.hero .hero-actions .btn.primary {
+  background: #c19a00;
+  border-color: #c19a00;
+  color: #171632;
+}
+.hero .hero-actions .btn.primary:hover {
+  background: #aa8700;
+  border-color: #aa8700;
+  color: #171632;
+}
+.hero .hero-actions .btn.ghost,
+.hero .hero-actions .btn.ghost:hover {
+  background: #187a75;
+  border-color: #187a75;
+  color: #fff;
+}
+.hero .hero-actions .btn.ghost:hover {
+  background: #146b67;
+  border-color: #146b67;
+}
+.venue-credit {
+  color: #6b626e;
+}
+.contacts .kicker,
+.contacts .kicker.dark {
+  color: #146e6a;
+}
+.contact-email {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: 800;
+}
+.contact-email a {
+  color: #146e6a;
+}
+
+.venue-restaurant {
+  border-top: 1px solid #e8e0d6;
+  margin-top: 20px;
+  padding-top: 16px;
+}
+.venue-restaurant h4 {
+  color: #171632;
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.venue-restaurant p {
+  color: #5e5663;
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.arrival-list {
+  display: grid;
+  gap: 14px;
+}
+.arrival-list article {
+  background: #fff;
+  border: 1px solid #e8e0d6;
+  border-radius: 22px;
+  padding: 18px 20px;
+}
+.arrival-list h3 {
+  margin: 0 0 8px;
+  color: #171632;
+  font-size: 18px;
+}
+.arrival-list p {
+  margin: 0;
+  color: #5e5663;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.site-footer {
+  background: #171632;
+  color: #fff8ef;
+  padding: 40px 24px 48px;
+  text-align: center;
+  font: 15px/1.65 Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.site-footer p {
+  margin: 0 0 6px;
+}
+.site-footer a {
+  color: #fff;
+  font-weight: 800;
+}
+.site-footer a:hover {
+  text-decoration: underline;
+}
+.site-footer a:focus-visible {
+  outline: 3px solid #ffd34f;
+  outline-offset: 3px;
+}

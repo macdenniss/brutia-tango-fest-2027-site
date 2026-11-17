@@ -1,5 +1,6 @@
 /* Confirm only a durable backend commit; legacy receipt links remain supported. */
 (() => {
+  const CONTACT_EMAIL = globalThis.BTF_CONTACT_EMAIL || 'pepertango@gmail.com';
   const root = document.querySelector('[data-registration-receipt]');
   if (!root) return;
   const en = root.dataset.lang === 'en';
@@ -9,7 +10,7 @@
   let attempt = 0;
   function complete(saved) {
     root.querySelector('h1').textContent = saved ? (en ? 'Request received.' : 'Richiesta ricevuta.') : (en ? 'Outcome unverified.' : 'Esito da verificare.');
-    root.querySelector('[data-receipt-message]').textContent = saved ? (en ? 'Thank you for submitting your registration request. We will check availability and send you confirmation with payment instructions.' : 'Grazie per aver inviato la tua richiesta di iscrizione. Verificheremo la disponibilità e ti invieremo la conferma con le istruzioni per il pagamento.') : (en ? 'Verification is temporarily unavailable. Reload this page to check again, or contact pepertango@gmail.com before submitting again.' : 'Verifica temporaneamente non disponibile. Ricarica questa pagina per riprovare oppure contatta pepertango@gmail.com prima di un nuovo invio.');
+    root.querySelector('[data-receipt-message]').textContent = saved ? (en ? 'Thank you for submitting your registration request. We will check availability and send you confirmation with payment instructions.' : 'Grazie per aver inviato la tua richiesta di iscrizione. Verificheremo la disponibilità e ti invieremo la conferma con le istruzioni per il pagamento.') : (en ? 'Verification is temporarily unavailable. Reload this page to check again, or contact ' + CONTACT_EMAIL + ' before submitting again.' : 'Verifica temporaneamente non disponibile. Ricarica questa pagina per riprovare oppure contatta ' + CONTACT_EMAIL + ' prima di un nuovo invio.');
     root.dataset.receiptStatus = saved ? 'confirmed' : 'unknown';
     if (saved) {
       try { sessionStorage.removeItem('btf27-request-v1'); } catch {}

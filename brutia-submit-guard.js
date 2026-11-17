@@ -1,5 +1,6 @@
 /* Keep one immutable request until Google has verified its saved state. */
 (() => {
+  const CONTACT_EMAIL = globalThis.BTF_CONTACT_EMAIL || 'pepertango@gmail.com';
   const form = document.querySelector('form[name="brutia-iscrizione"]');
   const button = form?.querySelector('button[type="submit"]');
   if (!form || !button) return;
@@ -84,7 +85,7 @@
     busy(false);
     notice.textContent = '';
     const message = !snapshot
-      ? copy('Non possiamo ancora verificare la richiesta precedente. I dati originali non sono disponibili per un reinvio sicuro: riprova la verifica o contatta pepertango@gmail.com. Non inviare una nuova iscrizione.', 'We cannot yet verify the previous request. Its original details are unavailable for a safe retry: check again or contact pepertango@gmail.com. Do not submit a new registration.')
+      ? copy('Non possiamo ancora verificare la richiesta precedente. I dati originali non sono disponibili per un reinvio sicuro: riprova la verifica o contatta ' + CONTACT_EMAIL + '. Non inviare una nuova iscrizione.', 'We cannot yet verify the previous request. Its original details are unavailable for a safe retry: check again or contact ' + CONTACT_EMAIL + '. Do not submit a new registration.')
       : connectionProblem
         ? copy('Problema di connessione: non possiamo ancora verificare se la richiesta è stata salvata. I dati sono conservati. Premi Invia per verificarla e, solo se necessario, reinviare la stessa richiesta senza duplicati.', 'Connection problem: we cannot yet verify whether your request was saved. Your details are retained. Press Send to check it and, only if necessary, retry the same request without duplicates.')
         : copy('Esito ancora da verificare. I dati sono conservati. Premi Invia: controlleremo prima il salvataggio e reinvieremo la stessa richiesta soltanto se necessario, senza duplicati.', 'Result not yet verified. Your details are retained. Press Send: we will check whether it was saved before retrying the same request if needed, without duplicates.');
@@ -92,7 +93,7 @@
     window.dispatchEvent(new Event('btf:registration-status-unknown'));
   }
   function serverErrors(result) {
-    if (result.code === 'already_registered') return [{message: copy('Questa iscrizione risulta già registrata. Non è stata creata una nuova richiesta. Per assistenza scrivi a pepertango@gmail.com.', 'This registration is already on file. No new request was created. For assistance, email pepertango@gmail.com.')}];
+    if (result.code === 'already_registered') return [{message: copy('Questa iscrizione risulta già registrata. Non è stata creata una nuova richiesta. Per assistenza scrivi a ' + CONTACT_EMAIL + '.', 'This registration is already on file. No new request was created. For assistance, email ' + CONTACT_EMAIL + '.')}];
     const text = String(result.error || '');
     if (/Campi obbligatori mancanti:/i.test(text)) {
       const labels = {nome:['nome','first name'],cognome:['cognome','last name'],data_nascita:['data di nascita','date of birth'],email:['email','email'],telefono:['telefono','phone number'],citta:['città','city'],genere:['genere','gender'],ruolo:['ruolo','dance role'],tipo_iscrizione:['tipologia di iscrizione','registration type'],privacy:['consenso privacy','privacy consent']};
@@ -113,11 +114,11 @@
       [/formula|lezione|seminario|seleziona almeno/i, 'pacchetto', 'Scegli un pass, il seminario o almeno una lezione valida.', 'Choose a pass, the seminar or at least one valid class.'],
       [/arrivo|partenza|soggiorno|notti/i, 'camera', 'Correggi il soggiorno: arrivo 19 febbraio e partenza 21 o 22 febbraio 2027.', 'Correct your stay: arrival February 19 and departure February 21 or 22, 2027.'],
       [/camera|condivisione/i, 'camera', 'Controlla la camera, la condivisione e i nomi dei compagni di camera.', 'Check the room, room-sharing option and roommate names.'],
-      [/sicurezza|identificativo|dati diversi/i, null, 'Non è possibile riutilizzare questa richiesta con dati diversi. Ricarica la pagina e riprova la verifica; se il problema continua contatta pepertango@gmail.com.', 'This request cannot be reused with different details. Reload and check again; if the problem continues, contact pepertango@gmail.com.'],
+      [/sicurezza|identificativo|dati diversi/i, null, 'Non è possibile riutilizzare questa richiesta con dati diversi. Ricarica la pagina e riprova la verifica; se il problema continua contatta ' + CONTACT_EMAIL + '.', 'This request cannot be reused with different details. Reload and check again; if the problem continues, contact ' + CONTACT_EMAIL + '.'],
     ];
     const match = rules.find(rule => rule[0].test(text));
     if (match) return [{name: match[1] || undefined, message: copy(match[2], match[3])}];
-    return [{message: copy('Il servizio non ha accettato la richiesta. Controlla i dati prima di riprovare; se il problema continua scrivi a pepertango@gmail.com.', 'The service did not accept your request. Check your details before trying again. If the problem continues, email pepertango@gmail.com.')}];
+    return [{message: copy('Il servizio non ha accettato la richiesta. Controlla i dati prima di riprovare; se il problema continua scrivi a ' + CONTACT_EMAIL + '.', 'The service did not accept your request. Check your details before trying again. If the problem continues, email ' + CONTACT_EMAIL + '.')}];
   }
   function reject(result, checkedRequest, initialAttempt = false) {
     if (current !== checkedRequest || result?.ok !== false || result.definitive !== true) return;
@@ -226,7 +227,7 @@
       payload = JSON.parse(payloadInput?.value || '');
       if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new Error('payload');
     } catch {
-      show([{message: copy('Il modulo non ha preparato i dati per l’invio. I campi compilati sono conservati. Ricarica la pagina e riprova; se il problema continua scrivi a pepertango@gmail.com.', 'The form could not prepare your request. Your entered details are retained. Reload and try again; if the problem continues, email pepertango@gmail.com.')}]);
+      show([{message: copy('Il modulo non ha preparato i dati per l’invio. I campi compilati sono conservati. Ricarica la pagina e riprova; se il problema continua scrivi a ' + CONTACT_EMAIL + '.', 'The form could not prepare your request. Your entered details are retained. Reload and try again; if the problem continues, email ' + CONTACT_EMAIL + '.')}]);
       return;
     }
     form.btfValidation?.clear();
